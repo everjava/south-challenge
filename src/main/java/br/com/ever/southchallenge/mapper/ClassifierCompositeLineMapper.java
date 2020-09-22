@@ -1,4 +1,4 @@
-package br.com.ever.southchallenge.batch;
+package br.com.ever.southchallenge.mapper;
 
 import org.springframework.batch.item.file.LineMapper;
 import org.springframework.classify.Classifier;
