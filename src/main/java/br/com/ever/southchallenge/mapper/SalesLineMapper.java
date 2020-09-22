@@ -2,7 +2,6 @@ package br.com.ever.southchallenge.mapper;
 
 import br.com.ever.southchallenge.model.Sales;
 import br.com.ever.southchallenge.model.SalesItem;
-import br.com.ever.southchallenge.model.Salesman;
 import org.springframework.batch.item.file.LineMapper;
 
 import java.util.ArrayList;
@@ -11,9 +10,7 @@ import java.util.List;
 
 public class SalesLineMapper implements LineMapper<Sales> {
 
-    //003çSale IDç[Item ID-Item Quantity-Item Price]çSalesman name
     public Sales mapLine(String line, int lineNumber) {
-        System.out.println(line);
         String[] lineSplit = line.split("ç");
         Sales sales = new Sales();
         sales.setCode(lineSplit[0]);
@@ -23,7 +20,6 @@ public class SalesLineMapper implements LineMapper<Sales> {
         return sales;
     }
 
-    // [1-34-10,  2-33-1.50,  3-40-0.10]
     private List<SalesItem> getSalesItem(String saleItemArray) {
         List<SalesItem> salesItemList = new ArrayList<>();
         saleItemArray = saleItemArray.replaceAll("\\[|\\]", "");

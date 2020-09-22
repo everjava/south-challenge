@@ -10,7 +10,7 @@ public class ClassifierCompositeLineMapper implements LineMapper<Object> {
     public ClassifierCompositeLineMapper(Classifier<String, LineMapper<?>> classifier) {
         this.classifier = classifier;
     }
-//6
+
     @Override
     public Object mapLine(String line, int lineNumber) throws Exception {
         return classifier.classify(line).mapLine(line, lineNumber);

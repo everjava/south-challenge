@@ -14,6 +14,7 @@ import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.batch.item.file.FlatFileItemReader;
 import org.springframework.batch.item.file.LineMapper;
+import org.springframework.batch.item.file.MultiResourceItemReader;
 import org.springframework.batch.item.file.mapping.PassThroughLineMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.classify.Classifier;
@@ -31,7 +32,7 @@ public class ParserJobConfig {
     private SouthProperties properties;
 
     @Bean
-    public ItemReader<Object> itemReader() {//1
+    public ItemReader<Object> itemReader() {
         FlatFileItemReader<Object> fileItemReader = new FlatFileItemReader<Object>();
         fileItemReader.setResource(new PathResource(this.getInputFileFullPath()));
         LineMapper<Object> salesmanLineMapper = classifierCompositeLineMapper();
@@ -40,11 +41,12 @@ public class ParserJobConfig {
     }
 
     @Bean
-    public ItemWriter<Object> itemWriter() {//3
-        return new LoggingItemWriter();
+    public ItemWriter<Object> itemWriter() {
+        return new SaveFileItemWriter();
     }
 
-    public ClassifierCompositeLineMapper classifierCompositeLineMapper() {//2
+
+    public ClassifierCompositeLineMapper classifierCompositeLineMapper() {
         Classifier<String, LineMapper<?>> classifier = new Classifier<String, LineMapper<? extends Object>>() {
             public LineMapper<?> classify(String classifiable) {
                 if (classifiable.contains("001")) {

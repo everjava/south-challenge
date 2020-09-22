@@ -9,11 +9,10 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @SpringBootApplication
 @Configuration
 @EnableBatchProcessing
-//@EnableScheduling
+@EnableScheduling
 public class SouthChallengeApplication {
 
     public static void main(String[] args) {
-        System.err.println("@EnableScheduling  SHOULD BE ENABLE !!!!!!!!!!!! ");
         SpringApplication.run(SouthChallengeApplication.class, args);
     }
 }

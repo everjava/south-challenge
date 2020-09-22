@@ -20,10 +20,7 @@ import java.util.Map;
 
 @Component
 public class ParserJobLauncher {
-
-
     private static final Logger LOGGER = LoggerFactory.getLogger(ParserJobLauncher.class);
-
     private final Job job;
     private final JobLauncher jobLauncher;
 
@@ -33,20 +30,17 @@ public class ParserJobLauncher {
         this.jobLauncher = jobLauncher;
     }
 
-    @Scheduled(cron = "0/10 * * * * *")
+    @Scheduled(cron = "0/50 * * * * *")
     public void runJob() throws JobParametersInvalidException, JobExecutionAlreadyRunningException, JobRestartException, JobInstanceAlreadyCompleteException {
-        LOGGER.info("SParserJobLauncher job was started");
-
+        LOGGER.info("ParserJobLauncher job was started");
         jobLauncher.run(job, newExecution());
         LOGGER.info("ParserJobLauncher job was stopped");
     }
 
     private JobParameters newExecution() {
         Map<String, JobParameter> parameters = new HashMap<String, JobParameter>();
-
         JobParameter parameter = new JobParameter(new Date());
         parameters.put("currentTime", parameter);
-
         return new JobParameters(parameters);
     }
 }
