@@ -65,10 +65,10 @@ public class ParserJobConfig {
     }
 
     @Bean//4
-    public Step exampleJobStep(ItemReader<Object> reader,
-                               ItemWriter<Object> writer,
-                               StepBuilderFactory stepBuilderFactory) {
-        return stepBuilderFactory.get("exampleJobStep")
+    public Step processFileJobStep(ItemReader<Object> reader,
+                                   ItemWriter<Object> writer,
+                                   StepBuilderFactory stepBuilderFactory) {
+        return stepBuilderFactory.get("processFileJobStep")
                 .<Object, Object>chunk(1000)
                 .reader(reader)
                 .writer(writer)
@@ -76,11 +76,11 @@ public class ParserJobConfig {
     }
 
     @Bean//5
-    public Job exampleJob(Step exampleJobStep,
-                          JobBuilderFactory jobBuilderFactory) {
-        return jobBuilderFactory.get("exampleJob")
+    public Job processFileJob(Step processFileJobStep,
+                              JobBuilderFactory jobBuilderFactory) {
+        return jobBuilderFactory.get("processFileJob")
                 .incrementer(new RunIdIncrementer())
-                .flow(exampleJobStep)
+                .flow(processFileJobStep)
                 .end()
                 .build();
     }
