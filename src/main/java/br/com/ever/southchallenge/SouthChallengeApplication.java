@@ -9,7 +9,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @SpringBootApplication
 @Configuration
 @EnableBatchProcessing
-@EnableScheduling
+//@EnableScheduling
 public class SouthChallengeApplication {
 
     public static void main(String[] args) {

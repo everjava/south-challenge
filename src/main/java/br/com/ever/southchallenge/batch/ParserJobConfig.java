@@ -5,24 +5,31 @@ import br.com.ever.southchallenge.mapper.CustomerLineMapper;
 import br.com.ever.southchallenge.mapper.SalesLineMapper;
 import br.com.ever.southchallenge.mapper.SalesmanLineMapper;
 import br.com.ever.southchallenge.properties.SouthProperties;
+import br.com.ever.southchallenge.report.FileReport;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
-import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.batch.item.file.FlatFileItemReader;
 import org.springframework.batch.item.file.LineMapper;
 import org.springframework.batch.item.file.MultiResourceItemReader;
 import org.springframework.batch.item.file.mapping.PassThroughLineMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.classify.Classifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.io.PathResource;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Path;
 
 @Configuration
@@ -30,15 +37,36 @@ public class ParserJobConfig {
 
     @Autowired
     private SouthProperties properties;
+    @Autowired
+    private StepBuilderFactory stepBuilderFactory;
+    private static final Logger LOGGER = LoggerFactory.getLogger(ParserJobConfig.class);
 
     @Bean
-    public ItemReader<Object> itemReader() {
+    public MultiResourceItemReader<Object> multiResourceItemReader() {
+        MultiResourceItemReader<Object> resourceItemReader = new MultiResourceItemReader<Object>();
+        try {
+            String path = Path.of(
+                    properties.getInputFolderName()).toUri().toString() +
+                    properties.getInputFolderMultipleFiles();
+            PathMatchingResourcePatternResolver resourceResolver = new PathMatchingResourcePatternResolver(
+                    this.getClass().getClassLoader());
+            resourceItemReader.setResources(resourceResolver.getResources(path));
+            resourceItemReader.setDelegate(itemReader());
+        } catch (IOException e) {
+            LOGGER.error("Error on classpath input files", e);
+        }
+
+        return resourceItemReader;
+    }
+
+    @Bean
+    public FlatFileItemReader<Object> itemReader() {
         FlatFileItemReader<Object> fileItemReader = new FlatFileItemReader<Object>();
-        fileItemReader.setResource(new PathResource(this.getInputFileFullPath()));
         LineMapper<Object> salesmanLineMapper = classifierCompositeLineMapper();
         fileItemReader.setLineMapper(salesmanLineMapper);
         return fileItemReader;
     }
+
 
     @Bean
     public ItemWriter<Object> itemWriter() {
@@ -65,13 +93,11 @@ public class ParserJobConfig {
     }
 
     @Bean//4
-    public Step processFileJobStep(ItemReader<Object> reader,
-                                   ItemWriter<Object> writer,
-                                   StepBuilderFactory stepBuilderFactory) {
+    public Step processFileJobStep() {
         return stepBuilderFactory.get("processFileJobStep")
                 .<Object, Object>chunk(1000)
-                .reader(reader)
-                .writer(writer)
+                .reader(multiResourceItemReader())
+                .writer(itemWriter())
                 .build();
     }
 
@@ -85,10 +111,4 @@ public class ParserJobConfig {
                 .build();
     }
 
-    private String getInputFileFullPath() {
-        Path homePath = Path.of(properties.getHomePath());
-        Path inputFolderPath = homePath.resolve(properties.getInputFolderName()).toAbsolutePath();
-        String inputFileFullPath = inputFolderPath.toString() + File.separator + properties.getInputFileName();
-        return inputFileFullPath;
-    }
 }

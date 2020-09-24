@@ -25,7 +25,6 @@ public class SouthProperties {
     @Value("${south.config.output.file.name}")
     private String outputFileName;
 
-    @Value("${south.config.input.file.name}")
-    private String inputFileName;
-
+    @Value("${south.config.input.multiplefile.name}")
+    private String inputFolderMultipleFiles;
 }
