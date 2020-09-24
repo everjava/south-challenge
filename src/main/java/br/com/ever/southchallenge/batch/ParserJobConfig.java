@@ -5,7 +5,6 @@ import br.com.ever.southchallenge.mapper.CustomerLineMapper;
 import br.com.ever.southchallenge.mapper.SalesLineMapper;
 import br.com.ever.southchallenge.mapper.SalesmanLineMapper;
 import br.com.ever.southchallenge.properties.SouthProperties;
-import br.com.ever.southchallenge.report.FileReport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.Job;
@@ -19,16 +18,11 @@ import org.springframework.batch.item.file.LineMapper;
 import org.springframework.batch.item.file.MultiResourceItemReader;
 import org.springframework.batch.item.file.mapping.PassThroughLineMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.classify.Classifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.core.io.PathResource;
-import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 
